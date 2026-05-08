@@ -77,18 +77,18 @@
   (wReserved1 WORD)
   (wReserved2 WORD)
   (wReserved3 WORD)
-  (value variant-union))
+  (value (:union variant-union)))
 
-(cffi:defctype VARIANTARG VARIANT)
+(cffi:defctype VARIANTARG (:struct VARIANT))
 
 (defun variant-type* (variant)
-  (cffi:foreign-slot-value variant 'VARIANT 'vt))
+  (cffi:foreign-slot-value variant '(:struct VARIANT) 'vt))
 
 (defun variant-type (variant)
   (logand (variant-type* variant) (lognot VT_BYREF)))
 
 (defun (setf variant-type) (new-type variant)
-  (setf (cffi:foreign-slot-value variant 'VARIANT 'vt) new-type))
+  (setf (cffi:foreign-slot-value variant '(:struct VARIANT) 'vt) new-type))
 
 (defun variant-array-p (variant)
   (not (zerop (logand (variant-type* variant) VT_ARRAY))))
@@ -113,8 +113,8 @@
 
 (defun variant-value (variant)
   (cffi:foreign-slot-value
-   (cffi:foreign-slot-value variant 'VARIANT 'value)
-   'variant-union
+   (cffi:foreign-slot-value variant '(:struct VARIANT) 'value)
+   '(:union variant-union)
    (variant-union-accessor variant)))
 
 (defun variant-array-value (variant)
@@ -126,13 +126,13 @@
 (defun (setf variant-value) (new-value variant)
   (setf
    (cffi:foreign-slot-value
-    (cffi:foreign-slot-value variant 'VARIANT 'value)
-    'variant-union
+    (cffi:foreign-slot-value variant '(:struct VARIANT) 'value)
+    '(:union variant-union)
     (variant-union-accessor variant))
    new-value))
 
 (defun alloc-variant ()
-  (let ((variant (cffi:foreign-alloc 'VARIANT)))
+  (let ((variant (cffi:foreign-alloc '(:struct VARIANT))))
     (dformat t "variant::alloc ~a~%" variant)
     (VariantInit variant)
     variant))

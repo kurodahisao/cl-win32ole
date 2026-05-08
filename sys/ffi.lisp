@@ -30,8 +30,8 @@
 
 (defun %unknown-function (unknown symbol)
   (cffi:foreign-slot-value
-   (cffi:foreign-slot-value unknown 'IUnknown 'vtbl)
-   'IUnknownVtbl symbol))
+   (cffi:foreign-slot-value unknown '(:struct IUnknown) 'vtbl)
+   '(:struct IUnknownVtbl) symbol))
 
 (defun unknown-add-ref (unknown)
   (cffi:foreign-funcall-pointer
@@ -48,8 +48,8 @@
 
 (defun %dispatch-function (dispatch symbol)
   (cffi:foreign-slot-value
-   (cffi:foreign-slot-value dispatch 'IDispatch 'vtbl)
-   'IDispatchVtbl symbol))
+   (cffi:foreign-slot-value dispatch '(:struct IDispatch) 'vtbl)
+   '(:struct IDispatchVtbl) symbol))
 
 (defun %dispatch-get-ids-of-names (dispatch riid rgszNames cNames lcid rgDispId)
   (cffi:foreign-funcall-pointer
@@ -104,7 +104,7 @@
 
 (defun %type-info-function (type-info symbol)
   (cffi:foreign-slot-value
-   (cffi:foreign-slot-value type-info 'ITypeInfo 'vtbl)
+   (cffi:foreign-slot-value type-info '(:struct ITypeInfo) 'vtbl)
    'ITypeInfoVtbl symbol))
 
 (defun %type-info-get-type-attr (type-info ppTypeAttr)
@@ -191,7 +191,7 @@
 ;;; type-lib
 (defun %type-lib-function (type-lib symbol)
   (cffi:foreign-slot-value
-   (cffi:foreign-slot-value type-lib 'ITypeLib 'vtbl)
+   (cffi:foreign-slot-value type-lib '(:struct ITypeLib) 'vtbl)
    'ITypeLibVtbl symbol))
 
 (defun type-lib-add-ref (type-lib)
@@ -306,24 +306,24 @@
   `(let ((hresult ,form))
      (when (< hresult #x00000000)
        (unless (cffi-sys:null-pointer-p
-                (cffi:foreign-slot-value excep-info 'EXCEPINFO
+                (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO)
                                          'pfnDeferredFillIn))
          (cffi:foreign-funcall-pointer
-          (cffi:foreign-slot-value excep-info 'EXCEPINFO 'pfnDeferredFillIn)
+          (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO) 'pfnDeferredFillIn)
           ()
           :pointer excep-info
           HRESULT))
        (let ((source "")
              (description "")
              (bstr-source
-              (cffi:foreign-slot-value excep-info 'EXCEPINFO 'bstrSource))
+              (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO) 'bstrSource))
              (bstr-description
-              (cffi:foreign-slot-value excep-info 'EXCEPINFO
+              (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO)
                                        'bstrDescription))
              (bstr-help-file
-              (cffi:foreign-slot-value excep-info 'EXCEPINFO 'bstrHelpFile))
-             (code (cffi:foreign-slot-value excep-info 'EXCEPINFO 'wCode))
-             (scode (cffi:foreign-slot-value excep-info 'EXCEPINFO 'scode)))
+              (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO) 'bstrHelpFile))
+             (code (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO) 'wCode))
+             (scode (cffi:foreign-slot-value excep-info '(:struct EXCEPINFO) 'scode)))
          (unless (cffi-sys:null-pointer-p bstr-source)
            (setf source (bstr->lisp bstr-source))
            (SysFreeString bstr-source))

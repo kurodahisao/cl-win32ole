@@ -27,32 +27,32 @@
 
 
 (defun from-variant-date (variant)
-  (cffi:with-foreign-object (udate 'UDATE)
+  (cffi:with-foreign-object (udate '(:struct UDATE))
     (let ((date (if (variant-byref-p variant)
                     (cffi:mem-aref (variant-value variant) 'DATE)
                     (variant-value variant))))
       (succeeded (VarUdateFromDate date 0 udate)))
-    (let ((st (cffi:foreign-slot-value udate 'UDATE 'st)))
+    (let ((st (cffi:foreign-slot-value udate '(:struct UDATE) 'st)))
       (make-instance
        'dt:date-time
-       :year (cffi:foreign-slot-value st 'SYSTEMTIME 'year)
-       :month (cffi:foreign-slot-value st 'SYSTEMTIME 'month)
-       :day (cffi:foreign-slot-value st 'SYSTEMTIME 'day)
-       :hour (cffi:foreign-slot-value st 'SYSTEMTIME 'hour)
-       :minute (cffi:foreign-slot-value st 'SYSTEMTIME 'minute)
-       :second (cffi:foreign-slot-value st 'SYSTEMTIME 'second)
-       :millisecond (cffi:foreign-slot-value st 'SYSTEMTIME 'millisecond)))))
+       :year (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'year)
+       :month (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'month)
+       :day (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'day)
+       :hour (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'hour)
+       :minute (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'minute)
+       :second (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'second)
+       :millisecond (cffi:foreign-slot-value st '(:struct SYSTEMTIME) 'millisecond)))))
 
 (defun to-variant-date (date-time)
-  (cffi:with-foreign-objects ((pudate 'UDATE)
+  (cffi:with-foreign-objects ((pudate '(:struct UDATE))
                               (pdate 'DATE))
-    (let ((st (cffi:foreign-slot-value pudate 'UDATE 'st)))
+    (let ((st (cffi:foreign-slot-value pudate '(:struct UDATE) 'st)))
       (macrolet
           ((m ()
              `(progn
                 ,@(mapcar
                    (lambda (x)
-                     `(setf (cffi:foreign-slot-value st 'SYSTEMTIME ',x)
+                     `(setf (cffi:foreign-slot-value st '(:struct SYSTEMTIME) ',x)
                             (,(intern (concatenate 'string (symbol-name x)
                                                    "-OF") :dt)
                               date-time)))

@@ -24,7 +24,7 @@
   (Data3 :unsigned-short)
   (Data4 :unsigned-char :count 8))
 
-(cffi:defctype CLSID GUID)
+(cffi:defctype CLSID (:struct GUID))
 
 (cffi:defctype LCID DWORD)
 
@@ -39,14 +39,14 @@
   (cNamedArgs UINT))
 
 (defvar *null-disp-params*
-  (let ((v (cffi:foreign-alloc 'DISPPARAMS)))
-    (setf (cffi:foreign-slot-value v 'DISPPARAMS 'rgvarg)
+  (let ((v (cffi:foreign-alloc '(:struct DISPPARAMS))))
+    (setf (cffi:foreign-slot-value v '(:struct DISPPARAMS) 'rgvarg)
           (cffi-sys:null-pointer)
-          (cffi:foreign-slot-value v 'DISPPARAMS 'rgdispidNamedArgs)
+          (cffi:foreign-slot-value v '(:struct DISPPARAMS) 'rgdispidNamedArgs)
           (cffi-sys:null-pointer)
-          (cffi:foreign-slot-value v 'DISPPARAMS 'cArgs)
+          (cffi:foreign-slot-value v '(:struct DISPPARAMS) 'cArgs)
           0
-          (cffi:foreign-slot-value v 'DISPPARAMS 'cNamedArgs)
+          (cffi:foreign-slot-value v '(:struct DISPPARAMS) 'cNamedArgs)
           0)
     v))
 
@@ -130,7 +130,7 @@
   (wIDLFlags :unsigned-short))
 
 (cffi:defcstruct TYPEATTR
-  (guid GUID)
+  (guid (:struct GUID))
   (lcid LCID)
   (dwReserved DWORD)
   (memidConstructor MEMBERID)
@@ -146,8 +146,8 @@
   (wTypeFlags WORD)
   (wMajorVerNum WORD)
   (wMinorVerNum WORD)
-  (tdescAlias TYPEDESC)
-  (idldescType IDLDESC))
+  (tdescAlias (:struct TYPEDESC))
+  (idldescType (:struct IDLDESC)))
 
 
 
@@ -157,8 +157,8 @@
 
 
 (cffi:defcstruct ELEMDESC
-  (tdesc TYPEDESC)
-  (idl-param-desc PARAMDESC))           ; union { IDLDESC idldesc;
+  (tdesc (:struct TYPEDESC))
+  (idl-param-desc (:struct PARAMDESC))) ; union { IDLDESC idldesc;
                                         ;         PARAMDESC paramdesc; }
 
 (cffi:defcstruct FUNCDESC
@@ -172,7 +172,7 @@
   (cParamsOpt SHORT)
   (oVft SHORT)
   (cScodes SHORT)
-  (elemdescFunc ELEMDESC)
+  (elemdescFunc (:struct ELEMDESC))
   (wFuncFlags WORD))
 
 
@@ -181,7 +181,7 @@
   (lpstrSchema LPOLESTR)
   (value :pointer)                      ; union { ULONG oInst;
                                         ;         VARIAN* lpvarValue };
-  (elemdescVar ELEMDESC)
+  (elemdescVar (:struct ELEMDESC))
   (wVarFlags WORD)
   (varkind :int))
 

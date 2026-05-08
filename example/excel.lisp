@@ -2,11 +2,17 @@
   (asdf:oos 'asdf:load-op :cl-win32ole)
   (use-package :cl-win32ole))
 
-(defun excel-example1 ()
+(defun excel-example1 (&optional path)
+  (when (or (stringp path) (pathnamep path))
+    (setq path (probe-file path)))
+  (when (pathnamep path)
+    (setq path (namestring path)))
   (let ((ex (create-object "Excel.Application")))
     (with-slots (visible workbooks) ex
       (setf visible t)
-      (let ((book (ole workbooks :add)))
+      (let ((book (if (null path)
+                      (ole workbooks :add)
+                      (ole workbooks :open path))))
         (let ((sheets (slot-value book 'worksheets)))
           (print (slot-value sheets 'count))
           (let ((sheet (ole sheets :item 1)))
@@ -17,8 +23,22 @@
                     (0 ,(dt:make-date 1973 4 26)
                        ,(dt:make-date-time 2009 3 25 21 25 34 123))))
             (let ((range (ole sheet :range "A1:C3")))
-              (print (slot-value range 'value)))))
-        (setf (slot-value book 'saved) t)))
+              (print (slot-value range 'value))
+              (let ((width (ignore-errors (slot-value range 'columnwidth))))
+                (if (null width)
+                    (setf (slot-value range 'columnwidth) 10.0)
+                    (setf (slot-value range 'columnwidth) (* 1.02 width)))))))
+        (setf (slot-value book 'saved) t)
+        (if path (ole book :save))))
     (ole ex :quit)))
 
 (excel-example1)
+
+#||
+ERROR CoInitialize has not been called.(800401F0)
+(CO-CREATE-INSTANCE CLSID (NULL-POINTER)
+                    (+ CLSCTX_INPROC_SERVER CLSCTX_LOCAL_SERVER)
+                    IID_IDISPATCH PDISPATCH)
+->
+(with-co-initialize (excel-example1))
+||#

@@ -6,7 +6,7 @@
   (:use #:common-lisp)
   (:export #:succeeded
            #:with-ole-str
-
+           #:with-co-initialize
            #:VARIANT
            #:VT_EMPTY
            #:VT_NULL

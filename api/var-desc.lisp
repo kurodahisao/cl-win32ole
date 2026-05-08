@@ -1,14 +1,14 @@
 (in-package :cl-win32ole)
 
 (defun make-var-desc (ptr-var-desc type-info)
-  (let ((memid (cffi:foreign-slot-value ptr-var-desc 'VARDESC 'memid)))
+  (let ((memid (cffi:foreign-slot-value ptr-var-desc '(:struct VARDESC) 'memid)))
     (make-instance
      'var-desc
      :name (get-name-of-documentation type-info memid)
      :memid memid
-     :value (to-lisp (cffi:foreign-slot-value ptr-var-desc 'VARDESC 'value))
-     :varkind (cffi:foreign-slot-value ptr-var-desc 'VARDESC 'varkind)
-     :var-flags (cffi:foreign-slot-value ptr-var-desc 'VARDESC 'wVarFlags)
+     :value (to-lisp (cffi:foreign-slot-value ptr-var-desc '(:struct VARDESC) 'value))
+     :varkind (cffi:foreign-slot-value ptr-var-desc '(:struct VARDESC) 'varkind)
+     :var-flags (cffi:foreign-slot-value ptr-var-desc '(:struct VARDESC) 'wVarFlags)
      )))
 
 (defmethod constant-p ((var-desc var-desc))

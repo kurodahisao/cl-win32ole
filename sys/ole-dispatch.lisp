@@ -31,19 +31,19 @@
 (defun dispatch-put-property (dispatch property variant)
   (let ((disp-id (dispatch-get-ids-of-names dispatch property)))
     (cffi:with-foreign-objects
-        ((args 'VARIANT)
-         (params 'DISPPARAMS)
+        ((args '(:struct VARIANT))
+         (params '(:struct DISPPARAMS))
          (disp-id-named-args 'DISPID))
       (setf (cffi:mem-aref disp-id-named-args 'DISPID) DISPID_PROPERTYPUT)
       (VariantInit args)
       (variant-copy args variant)
-      (setf (cffi:foreign-slot-value params 'DISPPARAMS 'rgvarg)
+      (setf (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'rgvarg)
             args
-            (cffi:foreign-slot-value params 'DISPPARAMS 'rgdispidNamedArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'rgdispidNamedArgs)
             disp-id-named-args
-            (cffi:foreign-slot-value params 'DISPPARAMS 'cArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'cArgs)
             1
-            (cffi:foreign-slot-value params 'DISPPARAMS 'cNamedArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'cNamedArgs)
             1)
       (succeeded (%dispatch-invoke dispatch
                                   disp-id
@@ -67,25 +67,25 @@
         (argc (length args))
         (reversed-args (reverse args)))
     (cffi:with-foreign-objects
-        ((params 'DISPPARAMS)
-         (v-args 'VARIANT argc)
-         (excep-info 'EXCEPINFO)
+        ((params '(:struct DISPPARAMS))
+         (v-args '(:struct VARIANT) argc)
+         (excep-info '(:struct EXCEPINFO))
          (arg-err :unsigned-int))
       (loop for i from 0 below argc
          for v = (cffi:mem-aref v-args 'VARIANT i)
          do (progn
               (VariantInit v)
               (variant-copy v (nth i reversed-args))))
-      (setf (cffi:foreign-slot-value params 'DISPPARAMS 'rgvarg)
+      (setf (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'rgvarg)
             v-args
-            (cffi:foreign-slot-value params 'DISPPARAMS 'rgdispidNamedArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'rgdispidNamedArgs)
             (cffi-sys:null-pointer)
-            (cffi:foreign-slot-value params 'DISPPARAMS 'cArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'cArgs)
             argc
-            (cffi:foreign-slot-value params 'DISPPARAMS 'cNamedArgs)
+            (cffi:foreign-slot-value params '(:struct DISPPARAMS) 'cNamedArgs)
             0
             (cffi:mem-aref arg-err :unsigned-int) 0)
-      (dotimes (i (cffi:foreign-type-size 'EXCEPINFO))
+      (dotimes (i (cffi:foreign-type-size '(:struct EXCEPINFO)))
         (setf (cffi:mem-aref excep-info :unsigned-char i) 0))
       (let ((result (alloc-variant)))
         (invoke-succeeded
